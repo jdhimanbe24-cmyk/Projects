@@ -19,7 +19,7 @@ st.title("🔧 Remaining Useful Life (RUL) Prediction")
 st.write("Upload engine sensor data to predict RUL")
 
 # =========================
-# DEBUG (VERY IMPORTANT)
+# DEBUG
 # =========================
 st.sidebar.write("📂 Current dir:", os.getcwd())
 st.sidebar.write("📂 Files:", os.listdir())
@@ -29,7 +29,6 @@ st.sidebar.write("📂 Files:", os.listdir())
 # =========================
 @st.cache_resource
 def load_model_and_tools(model_path, scaler_path, feature_path):
-    # ✅ FIX: safe loading
     model = tf.keras.models.load_model(model_path, compile=False)
     scaler = joblib.load(scaler_path)
 
@@ -65,10 +64,14 @@ dataset_choice = st.sidebar.selectbox(
 # =========================
 BASE_DIR = os.path.dirname(__file__)
 
-# ✅ FIX: use .h5 (compatible format)
-model_path = os.path.join(BASE_DIR, f"bilstm_{dataset_choice}.keras")
+# ✅ FIX: using .h5 model (compatible format)
+model_path = os.path.join(BASE_DIR, f"bilstm_{dataset_choice}.h5")
 scaler_path = os.path.join(BASE_DIR, f"scaler_{dataset_choice}.pkl")
 feature_path = os.path.join(BASE_DIR, f"features_{dataset_choice}.json")
+
+# Debug paths
+st.sidebar.write("Model path:", model_path)
+st.sidebar.write("Exists:", os.path.exists(model_path))
 
 # =========================
 # LOAD MODEL
@@ -136,12 +139,8 @@ if uploaded_file is not None:
 
     st.dataframe(result_df)
 
-    # Latest prediction
     st.metric("🧠 Latest RUL Prediction", f"{preds_real[-1]:.2f} cycles")
 
-    # =========================
-    # VISUALIZATION
-    # =========================
     st.line_chart(preds_real)
 
 else:
