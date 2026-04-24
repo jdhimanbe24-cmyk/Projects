@@ -1,10 +1,10 @@
+```python
 import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
 import json
 import tensorflow as tf
-from keras.models import load_model
 import os
 
 # =========================
@@ -29,10 +29,13 @@ st.sidebar.write("📂 Files:", os.listdir())
 # =========================
 @st.cache_resource
 def load_model_and_tools(model_path, scaler_path, feature_path):
-    model = tf.keras.models.load_model(model_path)
+    # ✅ FIX: safe loading
+    model = tf.keras.models.load_model(model_path, compile=False)
     scaler = joblib.load(scaler_path)
+
     with open(feature_path, "r") as f:
         feature_cols = json.load(f)
+
     return model, scaler, feature_cols
 
 # =========================
@@ -57,12 +60,15 @@ dataset_choice = st.sidebar.selectbox(
     ["FD001", "FD002", "FD003", "FD004"]
 )
 
-# ✅ FIX: Works whether files are in folder OR same directory
+# =========================
+# PATHS
+# =========================
 BASE_DIR = os.path.dirname(__file__)
 
-model_path = os.path.join(BASE_DIR, "bilstm_" + dataset_choice + ".keras")
-scaler_path = os.path.join(BASE_DIR, "scaler_" + dataset_choice + ".pkl")
-feature_path = os.path.join(BASE_DIR, "features_" + dataset_choice + ".json")
+# ✅ FIX: use .h5 (compatible format)
+model_path = os.path.join(BASE_DIR, f"bilstm_{dataset_choice}_fixed.h5")
+scaler_path = os.path.join(BASE_DIR, f"scaler_{dataset_choice}.pkl")
+feature_path = os.path.join(BASE_DIR, f"features_{dataset_choice}.json")
 
 # =========================
 # LOAD MODEL
@@ -130,7 +136,7 @@ if uploaded_file is not None:
 
     st.dataframe(result_df)
 
-    # Latest prediction (important)
+    # Latest prediction
     st.metric("🧠 Latest RUL Prediction", f"{preds_real[-1]:.2f} cycles")
 
     # =========================
@@ -140,3 +146,4 @@ if uploaded_file is not None:
 
 else:
     st.info("👆 Upload a CSV file to start prediction")
+```
