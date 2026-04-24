@@ -1,7 +1,8 @@
 streamlit
-tensorflow-cpu==2.12.0; python_version < "3.12"
-scikit-learn
-pandas
+keras==2.13.1
+h5py
 numpy
+pandas
+scikit-learn
 joblib
 matplotlib
