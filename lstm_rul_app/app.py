@@ -66,7 +66,7 @@ dataset_choice = st.sidebar.selectbox(
 BASE_DIR = os.path.dirname(__file__)
 
 # ✅ FIX: use .h5 (compatible format)
-model_path = os.path.join(BASE_DIR, f"bilstm_{dataset_choice}.h5")
+model_path = os.path.join(BASE_DIR, f"bilstm_{dataset_choice}.keras")
 scaler_path = os.path.join(BASE_DIR, f"scaler_{dataset_choice}.pkl")
 feature_path = os.path.join(BASE_DIR, f"features_{dataset_choice}.json")
 
