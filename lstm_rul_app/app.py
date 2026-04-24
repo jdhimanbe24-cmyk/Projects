@@ -1,4 +1,4 @@
-```python
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -146,4 +146,4 @@ if uploaded_file is not None:
 
 else:
     st.info("👆 Upload a CSV file to start prediction")
-```
+
