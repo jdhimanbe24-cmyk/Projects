@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import UnstructuredPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
@@ -25,7 +25,7 @@ llm = ChatGroq(
 
 def process_document_to_chroma_db(file_name):
     #Load the pdf using UnstructuredPDFLoader
-    loader = PyPDFLoader(f"{working_dir}/{file_name}")
+    loader = UnstructuredPDFLoader(f"{working_dir}/{file_name}")
     documents = loader.load()
     
     #split text into chunks
@@ -54,11 +54,14 @@ def answer_question(user_question):
     
     #create a RetrievalQA for chain to answer user questions along Llama-3.3-70B
     qa_chain = RetrievalQA.from_chain_type(
-        llm = llm,
-        chain_type = "stuff",
-        retriever = retriever
+    llm=llm,
+    chain_type="stuff",
+    retriever=retriever,
+    return_source_documents=True
     )
     response = qa_chain.invoke({"query": user_question})
+
     answer = response["result"]
-    
-    return answer
+    sources = response["source_documents"]
+
+    return answer, sources
